@@ -13,12 +13,12 @@ version: "2.1"
 
 networks:
   test:
-
+  private:
 services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile_debug
+      dockerfile: Dockerfile
     ports:
       - "18080:8080"
     depends_on:
@@ -26,7 +26,9 @@ services:
         condition: service_healthy
     networks:
       - test
-    command: java -Djava.security.egd=file:/dev/./urandom -jar /project/target/demo-0.0.1-SNAPSHOT.jar
+    command: java -Djava.security.egd=file:/dev/./urandom -jar /jar/app.jar
+    volumes:
+     - my-named-global-volume:/my-volumes/named-global-volume
 
   db:
     image: opavlova/db-mysql:5.7-test
@@ -40,3 +42,11 @@ services:
           retries: 30
     networks:
       - test
+
+volumes:
+  my-named-global-volume:
+   driver: local
+   driver_opts:
+     type: none
+     device: /Users/ankitsingh
+     o: bind
